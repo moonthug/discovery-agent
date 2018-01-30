@@ -7,5 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "consul": "^0.30.0",
+    "debug": "^3.1.0",
+    "node-etcd": "^5.1.0",
+    "node-zookeeper-client": "^0.2.2",
+    "uuid": "^3.2.1"
+  }
 }
