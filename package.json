@@ -12,6 +12,7 @@
   "dependencies": {
     "consul": "^0.30.0",
     "debug": "^3.1.0",
+    "eureka-js-client": "^4.4.0",
     "node-etcd": "^5.1.0",
     "node-zookeeper-client": "^0.2.2",
     "uuid": "^3.2.1"
