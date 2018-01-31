@@ -1,0 +1,6 @@
+{
+  "extends": "node",
+  "parserOptions": {
+    "ecmaVersion": 2017
+  }
+}
