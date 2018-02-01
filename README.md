@@ -3,7 +3,8 @@
 ![alt text](https://vignette.wikia.nocookie.net/simpsons/images/4/47/Tapped_Out_Unlock_Disco_Stu.png/revision/latest?cb=20150814211254 "Disco Agent")
 
 Currently a proof of concept/work in progress/jumble of ideas/messy shit.
-Don't use this... yet...
+
+_Don't use this module... yet..._
 
 ## Usage
 
@@ -52,9 +53,6 @@ they wont be found!
 
 Once registered, we can create a health check on our service discovery server.
 
-* Currently only works in the [consul](https://www.consul.io/) adapter
-* Only supports basic HTTP(s) checks
-
 ```javascript 1.7
 // Defaults
 const checkOptions = {
@@ -66,15 +64,18 @@ const checkOptions = {
 const check = await agent.createCheck('db-connectivity-check', '/health/db?auth=1234', 5000);
 ```
 
+* Currently only works in the [consul](https://www.consul.io/) adapter
+* Only supports basic HTTP(s) checks
+
+
 ### Listing services
 
 Services can be queried by `type` returning an array of available services.
 
-* At present, [Eureka](https://github.com/Netflix/eureka) requires the consuming client to register first (see above method)
-
 ```javascript 1.7
 const services = await agent.list('twitter-consumer');
 ```
+* At present, [Eureka](https://github.com/Netflix/eureka) requires the consuming client to register first (see above method)
 
 ### Retrieving a service from a pool
 
