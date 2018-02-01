@@ -8,6 +8,7 @@ Don't use this... yet...
 ## Usage
 
 
+
 ### Import
 
 ```javascript 1.7
@@ -80,6 +81,8 @@ const services = await agent.list('twitter-consumer');
 The agent comes with a mechanism to allow all parts of an application to `import`/`require` the library and use the
 static `pool` method to return the next available service.
 
+It also provides a very basic round-robin load balancing.
+
 Set up the pool:
 
 ```javascript 1.7
@@ -95,9 +98,69 @@ const request = require('request');
 DiscoveryAgent.pool()
   .then(service => {
     request(service.toURI('/users'), (error, response, body) => {
-      console.log(body)l
+      console.log(body);
     });
   })
 ```
 
 The returned service methods provide a convenient `toURI` method to build a complete URL.
+
+
+## Example
+
+Here is an example using the [consul](https://www.consul.io/) adapter.
+
+### Consumed
+
+```javascript 1.7
+const discoveryAgent = require('discovery-agent');
+const express = require('express');
+
+// Express
+const app = express();
+app.get('/', (req, res) => res.json({ id: 1234, tweet: '@moonthug stop using twitter in your examples' }));
+app.get('/health', (req, res) => res.send('OK'));
+app.listen(3000, () => console.log('Ready on port 3000'));
+
+// Discovery agent
+const agent = new discoveryAgent.DiscoveryAgent(
+  discoveryAgent.ADAPTER_TYPES.CONSUL, { host: '172.0.0.2'}
+);
+const registrationDetails = await agent.register(
+  'twitter-consumer',
+  '172.0.0.50',
+  3000
+);
+const check = await agent.createCheck('db-connectivity-check', '/health', 10000);
+```
+
+### Consumer
+
+```javascript 1.7
+const discoveryAgent = require('discovery-agent');
+const express = require('express');
+
+// Express
+const app = express();
+app.get('/', (req, res) => {
+  DiscoveryAgent.pool()
+    .then(service => {
+      request(service.toURI('/users'), (error, response, body) => {
+        res.json(body) 
+      });
+    })
+}));
+app.get('/health', (req, res) => res.send('OK'));
+app.listen(3000, () => console.log('Ready on port 3000'));
+
+// Discovery agent
+const agent = new discoveryAgent.DiscoveryAgent(
+  discoveryAgent.ADAPTER_TYPES.CONSUL, { host: '172.0.0.2'}
+);
+
+agent.createPool('twitter-consumer');
+```
+
+## @TODO
+
+- Lots
