@@ -6,9 +6,16 @@ Currently a proof of concept/work in progress/jumble of ideas/messy shit.
 
 _Don't use this module... yet..._
 
+
+## Install
+
+Not in the NPM registry yet. Link or install from github.
+
+```bash
+$ npm install git+https://git@github.com/moonthug/discovery-agent
+```
+
 ## Usage
-
-
 
 ### Import
 
