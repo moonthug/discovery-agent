@@ -2,7 +2,8 @@
 
 ![alt text](https://vignette.wikia.nocookie.net/simpsons/images/4/47/Tapped_Out_Unlock_Disco_Stu.png/revision/latest?cb=20150814211254 "Disco Agent")
 
-Currently a proof of concept/work in progress. Don't use this... yet...
+Currently a proof of concept/work in progress/jumble of ideas/messy shit.
+Don't use this... yet...
 
 ## Usage
 
