@@ -105,6 +105,12 @@ DiscoveryAgent.pool()
 
 The returned service methods provide a convenient `toURI` method to build a complete URL.
 
+```javascript 1.7
+const url = service.toURI('/users');
+
+// http://172.0.0.10:3000/users
+````
+
 
 ## Example
 
@@ -118,7 +124,8 @@ const express = require('express');
 
 // Express
 const app = express();
-app.get('/', (req, res) => res.json({ id: 1234, tweet: '@moonthug stop using twitter in your examples' }));
+app.get('/', (req, res) => res.json({ hello: 'world' }));
+app.get('/tweets', (req, res) => res.json([{ id: 1234, tweet: '@moonthug stop using twitter in your examples' }]));
 app.get('/health', (req, res) => res.send('OK'));
 app.listen(3000, () => console.log('Ready on port 3000'));
 
@@ -145,7 +152,7 @@ const app = express();
 app.get('/', (req, res) => {
   DiscoveryAgent.pool()
     .then(service => {
-      request(service.toURI('/users'), (error, response, body) => {
+      request(service.toURI('/tweets'), (error, response, body) => {
         res.json(body) 
       });
     })
