@@ -1,3 +1,102 @@
 # Disco Agent
 
 ![alt text](https://vignette.wikia.nocookie.net/simpsons/images/4/47/Tapped_Out_Unlock_Disco_Stu.png/revision/latest?cb=20150814211254 "Disco Agent")
+
+Currently a proof of concept/work in progress. Don't use this... yet...
+
+## Usage
+
+
+### Import
+
+```javascript 1.7
+const discoveryAgent = require('discovery-agent');
+```
+
+### Constructor
+
+The constructor sets up the connection configuration for the service. Below, we configure the `DiscoveryAgent` to use
+a [Eureka](https://github.com/Netflix/eureka) server, accepting values from the server environment with fall backs
+in place.
+
+```javascript 1.7
+const agent = new discoveryAgent.DiscoveryAgent(
+  discoveryAgent.ADAPTER_TYPES.EUREKA,
+  {
+    host: process.env.SERVICE_DISCOVERY_HOST || '127.0.0.1',
+    port: process.env.SERVICE_DISCOVERY_PORT || null, // default provided by adapter
+    advertiseHost: process.env.SERVICE_DISCOVERY_ADVERTISE_HOST || os.hostname(),
+    advertisePort: process.env.SERVICE_DISCOVERY_ADVERTISE_PORT || process.env.PORT || 3000,
+  }
+);
+```
+
+### Registration
+
+Here we register the service, specifying a group that we will query for later, and the details of the service.
+
+```javascript 1.7
+const registrationDetails = await agent.register(
+  'twitter-consumer',
+  '172.0.0.10',
+  3000
+);
+```
+
+Registration is optional for services that will perform the consumption. Consumers are quired to register... otherwise
+they wont be found!
+
+### Health checks
+
+Once registered, we can create a health check on our service discovery server.
+
+* Currently only works in the [consul](https://www.consul.io/) adapter
+* Only supports basic HTTP(s) checks
+
+```javascript 1.7
+// Defaults
+const checkOptions = {
+  method: 'GET',
+  interval: 30000,  // ms
+  timeout: 10000,   // ms
+}
+
+const check = await agent.createCheck('db-connectivity-check', '/health/db?auth=1234', 5000);
+```
+
+### Listing services
+
+Services can be queried by `type` returning an array of available services.
+
+* At present, [Eureka](https://github.com/Netflix/eureka) requires the consuming client to register first (see above method)
+
+```javascript 1.7
+const services = await agent.list('twitter-consumer');
+```
+
+### Retrieving a service from a pool
+
+The agent comes with a mechanism to allow all parts of an application to `import`/`require` the library and use the
+static `pool` method to return the next available service.
+
+Set up the pool:
+
+```javascript 1.7
+agent.createPool('twitter-consumer');
+```
+
+Access the pool from other area's in our application.
+
+```javascript 1.7
+const DiscoveryAgent = require('discovery-agent').DiscoveryAgent;
+const request = require('request');
+
+DiscoveryAgent.pool()
+  .then(service => {
+    request(service.toURI('/users'), (error, response, body) => {
+      console.log(body)l
+    });
+  })
+```
+
+The returned service methods provide a convenient `toURI` method to build a complete URL.
