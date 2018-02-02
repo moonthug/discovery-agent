@@ -7,6 +7,17 @@ Currently a proof of concept/work in progress/jumble of ideas/messy shit.
 
 _Don't use this module... yet..._
 
+## Overview
+
+Disco agent is a simple way of obtaining a service url from a given service-discovery server or kv store, providing a simple abstraction accross multiple adapters.
+
+The module includes registering and deregistering services, listing and returning the next available service in a load-balanced way as well as creating health checks.
+
+It currently provides adapters for working with:
+
+- [consul](https://www.consul.io/)
+- [Eureka](https://github.com/Netflix/eureka)
+- [etcd](https://github.com/coreos/etcd)
 
 ## Install
 
@@ -159,11 +170,12 @@ const request = require('request');
 
 // Express
 const app = express();
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
   DiscoveryAgent.pool()
     .then(service => {
-      request(service.toURI('/tweets')).pipe(res).
+      request(service.toURI('/tweets')).pipe(res);
     })
+    .catch(err => next(err));
 }));
 app.get('/health', (req, res) => res.send('OK'));
 app.listen(3000, () => console.log('Ready on port 3000'));
@@ -172,7 +184,6 @@ app.listen(3000, () => console.log('Ready on port 3000'));
 const agent = new discoveryAgent.DiscoveryAgent(
   discoveryAgent.ADAPTER_TYPES.CONSUL, { host: '172.0.0.2'}
 );
-
 agent.createPool('twitter-consumer');
 ```
 
