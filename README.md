@@ -155,15 +155,14 @@ const check = await agent.createCheck('db-connectivity-check', '/health', 10000)
 ```javascript 1.7
 const discoveryAgent = require('discovery-agent');
 const express = require('express');
+const request = require('request');
 
 // Express
 const app = express();
 app.get('/', (req, res) => {
   DiscoveryAgent.pool()
     .then(service => {
-      request(service.toURI('/tweets'), (error, response, body) => {
-        res.json(body) 
-      });
+      request(service.toURI('/tweets')).pipe(res).
     })
 }));
 app.get('/health', (req, res) => res.send('OK'));
